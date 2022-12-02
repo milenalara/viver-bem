@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <locale.h>
+#include <time.h>
 
 void chooseProgram(int op);
 void menu();
@@ -12,6 +14,7 @@ void realizarPesquisas();
 int main()
 {
   setlocale(LC_ALL, "Portuguese");
+  srand(time(NULL));
   int op;
 
   void chooseProgram(int op);
