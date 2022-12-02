@@ -11,10 +11,10 @@ int main()
     setlocale(LC_ALL,"portuguese");
     if ((f = fopen("teste.dat", "r+b"))==NULL)
     {
-        printf("Arquivo não existia ... criando arquivo!");
+        printf("Criando arquivo!\n");
         if((f = fopen("teste.dat", "w+b"))==NULL) //arq não existe
         {
-            printf("Erro na criação do arquivo!!");
+            printf("Erro na criação do arquivo!");
             exit(1);
         }
         system("pause");
@@ -35,30 +35,27 @@ struct CMedico
 
 };
 typedef struct CMedico medico;
-int localizaMedico(FILE* f, int codigo)
+int localizaMedico(FILE* f, int* codigo)
 {
-    int posicao=-1;
-    int encontrado=0;
+    int encontrado=-1;
     medico med;
     fseek(f,0,SEEK_SET);
     fread(&med, sizeof(med),1,f);
-    while(!feof(f) && !encontrado)
+    while(!feof(f) && encontrado==-1)
     {
-        if(med.codigo==codigo)
+        if(*codigo==med.codigo)
         {
             encontrado=1;
+
+
         }
         fread(&med,sizeof(med),1,f);
 
 
     }
-    if(encontrado==1)
-    {
-        return posicao;
 
-    }
-    else
-        return -1;
+
+    return encontrado;
 }
 void addMedico(FILE*f)
 {
@@ -67,7 +64,8 @@ void addMedico(FILE*f)
     printf("\nDigite o código do medico a ser cadastrado\n");
     fflush(stdin);
     scanf("%d", &med.codigo);
-    posicao=localizaMedico(f,med.codigo);
+    posicao=localizaMedico(f,&med.codigo);
+
     if (posicao==-1)
     {
         printf("Nome do medico:\n");
