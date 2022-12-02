@@ -4,15 +4,18 @@
 #include <conio.h>
 #include <locale.h>
 
+void addMedico(FILE *f);
+int localizaMedico(FILE *f, int codigo);
+
 int main()
 {
     FILE *f;
     char op;
     setlocale(LC_ALL, "portuguese");
-    if ((f = fopen("teste.txt", "r+b")) == NULL)
+    if ((f = fopen("teste.dat", "r+b")) == NULL)
     {
         printf("Arquivo não existia ... criando arquivo!");
-        if ((f = fopen("teste.txt", "w+b")) == NULL) // arq não existe
+        if ((f = fopen("teste.dat", "w+b")) == NULL) // arq não existe
         {
             printf("Erro na criação do arquivo!!");
             exit(1);
@@ -30,6 +33,7 @@ struct CMedico
     char especialidade[20];
 };
 typedef struct CMedico medico;
+
 int localizaMedico(FILE *f, int codigo)
 {
     int posicao = -1;
@@ -52,6 +56,7 @@ int localizaMedico(FILE *f, int codigo)
     else
         return -1;
 }
+
 void addMedico(FILE *f)
 {
     medico med;
@@ -68,7 +73,7 @@ void addMedico(FILE *f)
         printf("Especialidade\n");
         gets(med.especialidade);
         printf("Numero, formato DDD+Numero (sem 0 do DDD)\n");
-        scanf("%llu", med.numero);
+        scanf("%llu", &med.numero);
         fseek(f, 0, SEEK_END);
         fwrite(&med, sizeof(med), 1, f);
         fflush(stdin);

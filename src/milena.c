@@ -4,6 +4,11 @@
 #include <conio.h>
 #include <locale.h>
 
+int localizaPaciente(FILE *f, int codigo);
+void incluiPaciente(FILE *f);
+void alteraPaciente(FILE *f);
+void listaPacientes(FILE *f);
+
 struct Tpaciente
 {
   int codigo;
@@ -14,13 +19,9 @@ struct Tpaciente
 };
 typedef struct Tpaciente paciente;
 
-int localizaPaciente(FILE *f, int codigo);
-void incluiPaciente(FILE *f);
-void alteraPaciente(FILE *f);
-void listaPacientes(FILE *f);
-
 int main()
 {
+  setlocale(LC_ALL, "Portuguese");
   printf("\n\nCADASTRO DE PACIENTE\n\n");
 
   FILE *fPacientes;
@@ -30,7 +31,7 @@ int main()
   {
     if ((fPacientes = fopen("pacientes.dat", "w+b")) == NULL)
     {
-      printf("Erro na criaÃ§Ã£o do arquivo\n");
+      printf("Erro na criação do arquivo\n");
       exit(1);
     }
     system("pause");
@@ -39,10 +40,10 @@ int main()
   do
   {
     printf("Escolha:\n");
-    printf("1 - incluir registro");
-    printf("2 - alterar registro");
-    printf("3 - listar registros");
-    printf("4 - sair do sistema");
+    printf("1 - incluir registro\n");
+    printf("2 - alterar registro\n");
+    printf("3 - listar registros\n");
+    printf("4 - sair do sistema\n");
     scanf("%i", &op);
 
     switch (op)
@@ -56,12 +57,15 @@ int main()
     case 3:
       listaPacientes(fPacientes);
       break;
+    case 4:
+      break;
     default:
+      printf("Opção inválida\n");
       break;
     }
   } while (op != 4);
-  fclose(fPacientes);
 
+  fclose(fPacientes);
   return 0;
 }
 
@@ -95,30 +99,33 @@ void incluiPaciente(FILE *f)
   paciente p;
   int posicao;
 
-  p.codigo = rand() % (9999) + 1;
-
   posicao = localizaPaciente(f, p.codigo);
+
   if (posicao = -1)
   {
-    printf("Informe o telefone no formato (__)_____-____:\n");
+    p.codigo = rand() % (9999) + 1;
+
+    printf("Informe o telefone no com DDD sem 0 na frente:\n");
     fflush(stdin);
-    scanf("%i", p.telefone);
+    scanf("%", p.telefone);
 
     printf("Informe o nome:\n");
     fflush(stdin);
     gets(p.nome);
 
-    printf("Informe o endereÃ§o no formato (Logradouro), (numero), (bairro), (cidade):\n");
+    printf("Informe o endereço no formato (Logradouro), (numero), (bairro), (cidade):\n");
     fflush(stdin);
     gets(p.endereco);
 
     printf("Informe a data de nascimento no formato DD/MM/AAAA:\n");
     fflush(stdin);
     gets(p.dataNascimento);
+
+    fwrite(&p, sizeof(p), 1, f);
   }
   else
   {
-    printf("ERRO: cÃ³digo jÃ¡ existe no arquivo. InclusÃ£o nÃ£o realizada\n");
+    printf("ERRO: código já existe no arquivo. Inclusão não realizada\n");
   }
 }
 
@@ -126,7 +133,7 @@ void alteraPaciente(FILE *f)
 {
   int codigo, posicao;
   paciente p;
-  printf("Informe o cÃ³digo do paciente para alteraÃ§Ã£o de registro:\n");
+  printf("Informe o código do paciente para alteração de registro:\n");
   scanf("%i", &codigo);
   posicao = localizaPaciente(f, codigo);
 
@@ -139,20 +146,37 @@ void alteraPaciente(FILE *f)
     fflush(stdin);
     gets(p.nome);
 
-    printf("Informe o endereÃ§o atualizado no formato (Logradouro), (numero), (bairro), (cidade):\n");
+    printf("Informe o endereço atualizado no formato (Logradouro), (numero), (bairro), (cidade):\n");
     fflush(stdin);
     gets(p.endereco);
 
     printf("Informe a data de nascimento atualizada no formato DD/MM/AAAA:\n");
     fflush(stdin);
     gets(p.dataNascimento);
+
+    fseek(f, sizeof(p) * (posicao), SEEK_SET);
+    fwrite(&p, sizeof(p), 1, f);
+    fflush(f);
   }
   else
   {
-    printf("CÃ³digo nÃ£o encontrado.\n");
+    printf("código não encontrado.\n");
   }
 }
 
 void listaPacientes(FILE *f)
 {
+  paciente p;
+  fseek(f, 0, SEEK_SET);
+  fread(&p, sizeof(p), 1, f);
+
+  while (!feof(f))
+  {
+    printf("código: %i\n", p.codigo);
+    printf("Nome: %s\n", p.nome);
+    printf("endereço: %s\n", p.endereco);
+    printf("Telefone: %i\n", p.telefone);
+    printf("Data de nascimento: %s\n\n", p.dataNascimento);
+    fread(&p, sizeof(p), 1, f);
+  }
 }
