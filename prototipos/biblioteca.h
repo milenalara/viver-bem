@@ -233,24 +233,25 @@ void cadastraConsulta(FILE* arqmedico,FILE* arqpaciente,FILE* arqconsulta)
     srand(time(NULL));
     consulta agendamento;
     agendamento.codigoConsulta=rand()%9000+1000;
-    do
-    {
+   do{
         printf("\nCodigo do medico: \n");
         scanf("%d",&agendamento.codigoMedico);
 
-    }
-    while(localizaMedico(arqmedico,agendamento.codigoMedico)==-1);
 
-    do
-    {
+    }while(localizaMedico(arqmedico,agendamento.codigoMedico)==-1sd);
+
+   do
+   {
         printf("\nCodigo do paciente: \n");
         scanf("%d",&agendamento.codigoPaciente);
-    }
-    while(localizaPaciente(arqpaciente,agendamento.codigoPaciente)==-1);
+   }while(localizaPaciente(arqpaciente,agendamento.codigoPaciente)==-1);
 
     printf("\nDada: (Formato DD/MM/AAAA)\n");
+    fflush(stdin);
     gets(agendamento.data);
+
     printf("\Hora (Formato HH:MM)\n");
+    fflush(stdin);
     gets(agendamento.hora);
     fseek(arqconsulta,0,SEEK_END);
     fwrite(&agendamento,sizeof(agendamento),1,arqconsulta);
@@ -262,6 +263,7 @@ void cadastraConsulta(FILE* arqmedico,FILE* arqpaciente,FILE* arqconsulta)
 
 
 }
+
 
 
 #endif // BIBLIOTECAVIVERBEM_H_INCLUDED
