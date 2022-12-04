@@ -1,7 +1,8 @@
 #ifndef BIBLIOTECAVIVERBEM_H_INCLUDED
 #define BIBLIOTECAVIVERBEM_H_INCLUDED
+#include <math.h>
 
-int localizaMedico(FILE* f, int* codigo);
+int localizaMedico(FILE* f, int codigo);
 void addMedico(FILE*f);
 void imprime_Medico(FILE *f);
 int localizaPaciente(FILE *f, int codigo);
@@ -20,13 +21,20 @@ struct CMedico
 };
 typedef struct CMedico medico;
 
+struct CDataHora{
+    int hora;
+    int minuto;
+    int dia;
+    int mes;
+    int ano;
+}; typedef struct CDataHora cadData;
+
 struct CConsulta
 {
     int codigoPaciente;
     int codigoMedico;
     int codigoConsulta;
-    char data[10];
-    char hora[10];
+    cadData data;
 
 
 };
@@ -42,28 +50,70 @@ struct Tpaciente
 };
 typedef struct Tpaciente paciente;
 
-
-int localizaMedico(FILE* f, int* codigo)
+int localizaConsulta(FILE* f, int codigo)
 {
-    int encontrado=-1;
-    medico med;
-    fseek(f,0,SEEK_SET);
-    fread(&med, sizeof(med),1,f);
-    while(!feof(f) && encontrado==-1)
+    int posicao = -1, achou = 0;
+    consulta c;
+    fseek(f, 0, SEEK_SET);
+    fread(&c, sizeof(c), 1, f);
+    while (!feof(f) && !achou)
     {
-        if(*codigo==med.codigo)
+        posicao++;
+        if (c.codigoMedico == codigo)
         {
-            encontrado=1;
-
-
+            achou = 1;
         }
-        fread(&med,sizeof(med),1,f);
-
-
+        fread(&c, sizeof(c), 1, f);
     }
+    if (achou)
+    {
+        return posicao;
+    }
+    else
+    {
+        return -1;
+    }
+}
+int localizaQtdConsulta(FILE* f, int codigo, int dia, int mes, int ano)
+{
+    int achou = 0;
+    consulta c;
+    fseek(f, 0, SEEK_SET);
+    fread(&c, sizeof(c), 1, f);
+    while (!feof(f))
+    {
 
-
-    return encontrado;
+        if (c.codigoMedico == codigo && c.data.dia==dia && c.data.mes==mes && c.data.ano==ano)
+        {
+            achou ++;
+        }
+        fread(&c, sizeof(c), 1, f);
+    }
+   return achou;
+}
+int localizaMedico(FILE* f, int codigo)
+{
+    int posicao = -1, achou = 0;
+    medico med;
+    fseek(f, 0, SEEK_SET);
+    fread(&med, sizeof(med), 1, f);
+    while (!feof(f) && !achou)
+    {
+        posicao++;
+        if (med.codigo == codigo)
+        {
+            achou = 1;
+        }
+        fread(&med, sizeof(med), 1, f);
+    }
+    if (achou)
+    {
+        return posicao;
+    }
+    else
+    {
+        return -1;
+    }
 }
 void addMedico(FILE*f)
 {
@@ -112,6 +162,21 @@ void imprime_Medico(FILE *f)
         printf("Especialidade.....:%s\n",m.especialidade);
 
         fread(&m, sizeof(m),1, f);
+    }
+}
+void imprime_Consulta(FILE *f)
+{
+    consulta cons;
+    fseek(f,0,SEEK_SET);
+    fread(&cons, sizeof(cons),1, f);
+    while (!feof(f))
+    {
+        printf("Código....:%d \n",cons.codigoConsulta);
+        printf("Código....:%d \n",cons.codigoMedico);
+        printf("Nome.:%d \n",cons.codigoPaciente);
+
+
+        fread(&cons, sizeof(cons),1, f);
     }
 }
 
@@ -230,29 +295,90 @@ void listaPacientes(FILE *f)
 
 void cadastraConsulta(FILE* arqmedico,FILE* arqpaciente,FILE* arqconsulta)
 {
+
     srand(time(NULL));
+    int controleHora=0;
+    int controleData=0;
+    int controleQtd=0;
     consulta agendamento;
+    consulta agendamentoAux;
+
+    //codigo consulta randomico
     agendamento.codigoConsulta=rand()%9000+1000;
-   do{
+    //variaveis de controle
+    agendamento.data.minuto=-1;
+    agendamento.data.hora=-1;
+    agendamento.data.dia=-1;
+    agendamento.data.mes=-1;
+    agendamento.data.ano=-1;
+    do
+    {
         printf("\nCodigo do medico: \n");
+        fflush(stdin);
         scanf("%d",&agendamento.codigoMedico);
 
 
-    }while(localizaMedico(arqmedico,agendamento.codigoMedico)==-1sd);
+    }
+    while(localizaMedico(arqmedico,agendamento.codigoMedico)==-1);
 
-   do
-   {
+
+    do
+    {
         printf("\nCodigo do paciente: \n");
+        fflush(stdin);
         scanf("%d",&agendamento.codigoPaciente);
-   }while(localizaPaciente(arqpaciente,agendamento.codigoPaciente)==-1);
-
-    printf("\nDada: (Formato DD/MM/AAAA)\n");
+    }
+    while(localizaPaciente(arqpaciente,agendamento.codigoPaciente)==-1);
+    do{
+    do{
+    printf("\nData: (Formato DD/MM/AAAA)\n");
+    scanf("%d/%d/%d",&agendamento.data.dia,&agendamento.data.mes, &agendamento.data.ano);
+    if (localizaQtdConsulta(arqconsulta,agendamento.codigoMedico,agendamento.data.dia,agendamento.data.mes,agendamento.data.ano)>=2){
+        printf("Este médico já possui 2 consultas nesta data, favor escolher outra data");
+        controleData=1;
+    }
+    else
+        controleData=0;
+    //printf("%d\n%d\n%d\n",agendamento.data.dia,agendamento.data.mes,agendamento.data.ano);
+    }while(agendamento.data.dia<1 || agendamento.data.dia>31 || agendamento.data.mes<1 || agendamento.data.mes>12 || agendamento.data.ano<2000 || agendamento.data.ano>2100 || controleData);
+    //printf("%d", localizaQtdConsulta(arqconsulta,agendamento.codigoMedico,agendamento.data.dia,agendamento.data.mes,agendamento.data.ano));
+    do{
+    printf("\nHora (entre 7:00 - 21:00) Formato HH:MM\n");
     fflush(stdin);
-    gets(agendamento.data);
+    scanf("%d:%d",&agendamento.data.hora,&agendamento.data.minuto);
+    //printf("%d\n%d\n",agendamento.data.hora,agendamento.data.minuto);
+    }while(agendamento.data.hora<7 || agendamento.data.hora>21 || agendamento.data.minuto<0 || agendamento.data.minuto>60);
+    int posicaoMed=localizaConsulta(arqconsulta,agendamento.codigoMedico);
+    if (posicaoMed!=-1){
+        fseek(arqconsulta, sizeof(agendamentoAux) * (posicaoMed), SEEK_SET);
+        fread(&agendamentoAux, sizeof(agendamentoAux), 1, arqconsulta);
 
-    printf("\Hora (Formato HH:MM)\n");
-    fflush(stdin);
-    gets(agendamento.hora);
+
+        if (agendamentoAux.data.ano==agendamento.data.ano && agendamentoAux.data.dia==agendamento.data.dia && agendamentoAux.data.mes==agendamento.data.mes){
+            int diferencaHoras=abs(((agendamentoAux.data.hora*60)+agendamentoAux.data.minuto-(agendamento.data.hora*60)+agendamento.data.minuto));
+            //printf("%d", diferencaHoras);
+            if ((diferencaHoras)<30){
+                    printf("\nDiferença menor do que 30 minutos da consulta: %02d:%02d", agendamentoAux.data.hora,agendamentoAux.data.minuto);
+                controleHora=1;
+                }
+                else
+                    controleHora=0;
+
+
+
+        }
+        else
+            controleHora=0;
+
+
+
+
+
+    }
+    else
+        controleHora=0;
+    }while(controleHora);
+
     fseek(arqconsulta,0,SEEK_END);
     fwrite(&agendamento,sizeof(agendamento),1,arqconsulta);
 
@@ -265,5 +391,5 @@ void cadastraConsulta(FILE* arqmedico,FILE* arqpaciente,FILE* arqconsulta)
 }
 
 
-
 #endif // BIBLIOTECAVIVERBEM_H_INCLUDED
+
