@@ -730,7 +730,7 @@ void imprimeConsultaPorPaciente(FILE* f, FILE* p, FILE* m, int dia, int mes, int
 
     }
 
-
+}
 
 
 #endif // BIBLIOTECAVIVERBEM_H_INCLUDED
