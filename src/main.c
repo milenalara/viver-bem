@@ -70,10 +70,10 @@ int main()
 
 void menu()
 {
-  printf("1 - cadastrar um paciente");
-  printf("2 - cadastrar um médico");
-  printf("3 - cadastrar uma consulta");
-  printf("4 - buscar paciente");
-  printf("5 - buscar médico");
-  printf("4 - buscar consulta");
+  printf("1 - cadastrar um paciente\n");
+  printf("2 - cadastrar um médico\n");
+  printf("3 - cadastrar uma consulta\n");
+  printf("4 - mostra pacientes\n");
+  printf("5 - mostra médicos\n");
+  printf("6 - mostra consultas\n");
 }
