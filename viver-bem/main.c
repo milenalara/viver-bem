@@ -40,8 +40,8 @@ int main()
   do
   {
     printf("-----------MENU PRINCIPAL-----------\n");
-    printf("Digite o cÃ³digo do programa que deseja executar\n");
-    printf("OU digite 0 para ver as opÃ§Ãµes de programas\n");
+    printf("Digite o código do programa que deseja executar\n");
+    printf("OU digite 0 para ver as opções de programas\n");
     printf("OU digite -1 para sair");
     scanf("%i", &op);
 
@@ -71,7 +71,7 @@ int main()
       imprime_Consulta(&fConsultas);
       break;
     default:
-      printf("Programa nÃ£o encontrado\n");
+      printf("Programa não encontrado\n");
       break;
     }
 
@@ -83,9 +83,9 @@ int main()
 void menu()
 {
   printf("1 - cadastrar um paciente\n");
-  printf("2 - cadastrar um mÃ©dico\n");
+  printf("2 - cadastrar um médico\n");
   printf("3 - cadastrar uma consulta\n");
   printf("4 - mostra pacientes\n");
-  printf("5 - mostra mÃ©dicos\n");
+  printf("5 - mostra médicos\n");
   printf("6 - mostra consultas\n");
 }

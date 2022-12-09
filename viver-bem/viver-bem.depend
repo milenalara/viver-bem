@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1670548092 source:d:\repos\_aeds-fes\viver-bem\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	<time.h>
+	"biblioteca.h"
+
+1670548151 d:\repos\_aeds-fes\viver-bem\biblioteca.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	<math.h>
+	<time.h>
+
