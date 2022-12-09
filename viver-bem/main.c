@@ -3,46 +3,60 @@
 #include <string.h>
 #include <locale.h>
 #include <time.h>
-#include "biblioteca.h"
+#include "bibliotecaviverbem.h"
 
-void menu();
 
-void cadastraConsulta(FILE *arqmedico, FILE *arqpaciente, FILE *arqconsulta);
-void imprime_Consulta(FILE *f);
-// void imprimeConsultaPorData(FILE *f, FILE *p, FILE *m);
-// void imprimeConsultaPorMedico(FILE *f, FILE *p, FILE *m);
-// int localizaConsulta(FILE *f, int codigo);
-// int localizaQtdConsulta(FILE *f, int codigo, int dia, int mes, int ano);
-// int localizaQtdConsulta(FILE *f, int codigo, int dia, int mes, int ano);
-// void excluiConsulta(FILE *f, int codigo);
-// void cancelaConsulta(FILE *arqconsulta);
-
-// int localizaMedicoConsulta(FILE *f, int codigo, int dia, int mes, int ano);
-// int localizaMedico(FILE *f, int codigo);
-void addMedico(FILE *f);
-void imprime_Medico(FILE *f);
-
-// int localizaPaciente(FILE *f, int codigo);
-void incluiPaciente(FILE *f);
-// void alteraPaciente(FILE *f);
-void listaPacientes(FILE *f);
-
-int pagamentoMedico(FILE *arqconsulta, FILE *arqmedico, FILE *f);
-
-FILE *fPacientes, *fMedicos, *fConsultas;
 
 int main()
 {
-  setlocale(LC_ALL, "Portuguese");
+
+    FILE *fConsultas;
+    FILE *fMedicos;
+    FILE *fPacientes;
+    int op;
+
+    setlocale(LC_ALL,"portuguese");
+    if ((fConsultas = fopen("consulta.dat", "r+b"))==NULL)
+    {
+        printf("Criando arquivo!\n");
+        if((fConsultas = fopen("consulta.dat", "w+b"))==NULL) //arq não existe
+        {
+            printf("Erro na criação do arquivo!");
+            exit(1);
+        }
+        system("pause");
+    }
+    if ((fMedicos = fopen("medico.dat", "r+b"))==NULL)
+    {
+        printf("Criando arquivo!\n");
+        if((fMedicos = fopen("medico.dat", "w+b"))==NULL) //arq não existe
+        {
+            printf("Erro na criação do arquivo!");
+            exit(1);
+        }
+        system("pause");
+    }
+    if ((fPacientes = fopen("paciente.dat", "r+b"))==NULL)
+    {
+        printf("Criando arquivo!\n");
+        if((fPacientes = fopen("paciente.dat", "w+b"))==NULL) //arq não existe
+        {
+            printf("Erro na criação do arquivo!");
+            exit(1);
+        }
+        system("pause");
+    }
+
+
+
   srand(time(NULL));
-  int op;
 
   do
   {
-    printf("-----------MENU PRINCIPAL-----------\n");
+    printf("\n-----------MENU PRINCIPAL-----------\n");
     printf("Digite o código do programa que deseja executar\n");
     printf("OU digite 0 para ver as opções de programas\n");
-    printf("OU digite -1 para sair");
+    printf("OU digite -1 para sair\n");
     scanf("%i", &op);
 
     switch (op)
@@ -53,23 +67,39 @@ int main()
       menu();
       break;
     case 1:
+        //Implemente uma função para cadastrar um paciente
       incluiPaciente(fPacientes);
       break;
     case 2:
+        //Implemente uma função para cadastrar um médico
       addMedico(fMedicos);
       break;
     case 3:
-      cadastraConsulta(fMedicos, fPacientes, fConsultas);
+        //Implemente uma função que cadastre uma consulta
+      cadastraConsulta(fMedicos,fPacientes,fConsultas);
       break;
     case 4:
-      listaPacientes(fPacientes);
+        //a) Receba uma data e mostre na tela todas as consultas daquele dia.
+
+      imprimeConsultaPorData(fConsultas,fPacientes,fMedicos);
       break;
     case 5:
-      imprime_Medico(fMedicos);
+        //Implemente uma função que mostre na tela todas as consultas de um determinado médico
+      imprimeConsultaPorMedico(fConsultas,fPacientes,fMedicos);
       break;
     case 6:
-      imprime_Consulta(fConsultas);
-      break;
+         //b) Receba o nome OU o código de um paciente e mostre suas consultas já realizadas até a data corrente.
+        imprimeConsultaPorPaciente(fConsultas,fPacientes,fMedicos);
+        break;
+    case 7:
+        //Implemente uma função que permita cancelar uma determinada consulta
+        cancelaConsulta(fConsultas);
+        break;
+    case 8:
+        //função extra, pagamento do medico
+        pagamentoMedico(fConsultas);
+        break;
+
     default:
       printf("Programa não encontrado\n");
       break;
@@ -78,14 +108,4 @@ int main()
   } while (op != -1);
 
   return 0;
-}
-
-void menu()
-{
-  printf("1 - cadastrar um paciente\n");
-  printf("2 - cadastrar um médico\n");
-  printf("3 - cadastrar uma consulta\n");
-  printf("4 - mostra pacientes\n");
-  printf("5 - mostra médicos\n");
-  printf("6 - mostra consultas\n");
 }
