@@ -1,0 +1,52 @@
+--------------PACIENTES--------------
+
+-----------cd 1000
+Aline Muniz
+(31)99595-0909
+Rua dos Otoni, 1001, Santa Efigenia, Belo Horizonte
+12/12/2000
+
+-----------cd 1001
+Eduardo Galeano
+(31)99898-9898
+Avenida Brasil, 777, Funcionários, Belo Horizonte
+27/07/1959
+
+-----------cd 1002
+Ulisses Machado
+(31)99898-0000
+Rua do Bosque, 123, Floresta, Belo Horizonte
+25/11/1960
+
+--------------MÉDICOS--------------
+
+-----------cd 2000
+Jurema Silva
+(31)3333-9494
+Cardiologia
+
+-----------cd 2001
+Drauzio Varela
+(31)99596-4848
+Dermatologia
+
+
+--------------CONSULTAS--------------
+
+>>>>paciente Aline com Dra Jurema
+2000
+1000
+12/12/2022
+07:00
+
+>>>>paciente Eduardo com Dra Jurema
+2000
+1001
+12/12/2022
+07:30
+
+>>>>paciente Ulisses com Dra Jurema
+2000
+1002
+12/12/2022
+08:00
