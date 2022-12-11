@@ -1,0 +1,106 @@
+--------------PACIENTES--------------
+
+>>>>>>CASOS DE SUCESSO<<<<<<
+
+-----------código esperado 1000
+Aline Muniz
+31995950909
+Rua dos Otoni, 1001, Santa Efigenia, Belo Horizonte
+12/12/2000
+
+-----------código esperado 1001
+  Eduardo Galeano
+  31998989898
+  Avenida Brasil, 777, Funcionarios, Belo Horizonte
+  27/07/1959
+
+-----------código esperado 1002
+Ulisses Machado
+31998980000
+Rua do Bosque, 123, Floresta, Belo Horizonte
+25/11/1960
+
+>>>>>>CASOS DE ERRO<<<<<<
+
+----------- Erro: nome excede 200 caracteres
+Teresa Cristina Maria Josefa Gaspar Baltasar Melchior Januária Rosalía Lúcia Francisca de Assis Isabel Francisca de Pádua Donata Bonosa Andréia de Avelino Rita Liutgarda Gertrude Venância Tadea Spiridione Roca Matilde de Bourbon-Duas Sicílias
+31995950909
+Rua Bernardo Guimarães, 1001, Santa Efigenia, Belo Horizonte
+12/03/1999
+
+----------- Erro: telefone deve conter apenas números
+Miguel Maria do Patrocínio João Carlos Francisco de Assis Xavier de Paula Pedro de Alcântara António Rafael Gabriel Joaquim José Gonzaga Evaristo
+(31)3388-9945
+Avenida Bandeirantes, 444, Mangabeiras, Belo Horizonte
+
+----------- Erro: endereço excede 200 caracteres
+Bruno Machado
+31998980000
+Rua do Bosque de um reino tão-tão-tão distante que ninguém jamais chegou já, onde Judas perdeu as botas, após as montanhas e montes, número 12345678979, Cidade no meio do nada, Reino Tão-tão-tão-distante
+25/11/1960
+
+-----------  Erro: data de nascimento excede 10 caracteres
+Bruno Machado
+31998980000
+Avenida Bandeirantes, 444, Mangabeiras, Belo Horizonte
+25/11//1960
+
+
+
+--------------MÉDICOS--------------
+
+>>>>>>CASOS DE SUCESSO<<<<<<
+
+-----------código esperado 2000
+Jurema Silva
+3133339494
+Cardiologista
+
+-----------código esperado 2001
+Drauzio Varela
+31995964848
+Dermatologista
+
+-----------código esperado 2002
+Bruno Mendes
+31999991234
+Clínico geral
+
+>>>>>>CASOS DE ERRO<<<<<<
+
+----------- erro: especialidade excede 20 caracteres
+Bruno Mendes
+31999991234
+Dermatologia, tricologia, saúde capilar
+
+
+----------- erro: telefone é string e não int
+Drauzio Varela
+(31)9959-64848
+Dermatologista
+
+
+Teresa Cristina Maria Josefa Gaspar Baltasar Melchior Januária Rosalía Lúcia Francisca de Assis Isabel Francisca de Pádua Donata Bonosa Andréia de Avelino Rita Liutgarda Gertrude Venância Tadea Spiridione Roca Matilde de Bourbon-Duas Sicílias
+3133331234
+Cardiologista
+
+
+--------------CONSULTAS--------------
+
+>>>>paciente Aline com Dra Jurema
+2000
+1000
+12/12/2022
+07:00
+
+>>>>paciente Eduardo com Dra Jurema
+2000
+1001
+12/12/2022
+07:30
+
+>>>>paciente Ulisses com Dra Jurema
+2000
+1002
+12/12/2022
+08:00
