@@ -18,10 +18,16 @@ void imprimePacientes(FILE *fPacientes);
 void cadastraMedico(FILE *fMedicos);
 void alteraMedico(FILE *fMedicos);
 void imprimeMedicos(FILE *fMedicos);
+void calculaPagamentoMedico(FILE *fConsultas);
 
 // MÉTODOS DE CONSULTA
 void cadastraConsulta(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas);
+void alteraConsulta(FILE *fConsultas);
+void cancelaConsulta(FILE *fConsultas);
 void imprimeConsultas(FILE *fConsultas);
+void imprimeConsultasPorData(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas);
+void imprimeConsultasPorMedico(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas);
+void imprimeConsultasPorPaciente(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas);
 
 int main()
 {
@@ -95,14 +101,28 @@ int main()
       imprimeMedicos(fMedicos);
       break;
     case 7:
-      cadastraConsulta(fPacientes, fMedicos, fConsultas);
+      calculaPagamentoMedico(fConsultas);
       break;
     case 8:
+      cadastraConsulta(fPacientes, fMedicos, fConsultas);
       break;
     case 9:
+      break;
+      alteraConsulta(fConsultas);
+    case 10:
+      cancelaConsulta(fConsultas);
+      break;
+    case 11:
       imprimeConsultas(fConsultas);
       break;
-    case 10:
+    case 12:
+      imprimeConsultasPorData(fPacientes, fMedicos, fConsultas);
+      break;
+    case 13:
+      imprimeConsultasPorMedico(fPacientes, fMedicos, fConsultas);
+      break;
+    case 14:
+      imprimeConsultasPorPaciente(fPacientes, fMedicos, fConsultas);
       break;
     default:
       printf("Programa não encontrado\n");

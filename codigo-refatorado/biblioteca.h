@@ -63,18 +63,22 @@ void menuProgramas()
 
   printf("\nPACIENTE\n");
   printf("1 - Cadastrar paciente\n");
-  printf("2 - Alterar paciente\n");
-  printf("3 - Imprimir todos os pacientes\n");
+  printf("2 - Alterar cadastro de paciente\n");
+  printf("3 - Exibir lista de pacientes\n");
 
   printf("\nMÉDICO\n");
   printf("4 - Cadastrar médico\n");
-  printf("5 - Alterar médico\n");
-  printf("6 - Imprimir todos os médicos\n");
+  printf("5 - Alterar cadastro de médico\n");
+  printf("6 - Exibir lista de médicos\n");
+  printf("7 - Calcular pagamento de um médico\n");
 
   printf("\nCONSULTA\n");
-  printf("7 - Cadastrar consulta\n");
-  printf("8 - Alterar consulta\n");
-  printf("9 - Imprimir todas as consultas\n");
+  printf("8 - Cadastrar consulta\n");
+  printf("9 - Alterar dados de consulta\n");
+  printf("10 - Cancelar consulta\n");
+  printf("11 - Exibir lista de consultas\n");
+  printf("12 - Pesquisar consultas por data\n");
+  printf("13 - Pesquisar consultas por médico\n");
 }
 
 // MÉTODOS DE PACIENTE
@@ -264,6 +268,7 @@ void alteraMedico(FILE *fMedicos)
 {
   int codigo, posicao;
   medico med;
+
   printf("Informe o código do médico para alteração de registro:\n");
   fflush(stdin);
   scanf("%i", &codigo);
@@ -296,8 +301,10 @@ void alteraMedico(FILE *fMedicos)
 void imprimeMedicos(FILE *fMedicos)
 {
   medico med;
+
   fseek(fMedicos, 0, SEEK_SET);
   fread(&med, sizeof(med), 1, fMedicos);
+
   while (!feof(fMedicos))
   {
     printf("\n\n");
@@ -308,6 +315,37 @@ void imprimeMedicos(FILE *fMedicos)
 
     fread(&med, sizeof(med), 1, fMedicos);
   }
+}
+
+void calculaPagamentoMedico(FILE *fConsultas)
+{
+  consulta cons;
+  int codigo, qtdConsultas = 0;
+  float salarioMedico = 0, precoConsulta = 50;
+
+  fseek(fConsultas, 0, SEEK_SET);
+  fread(&cons, sizeof(cons), 1, fConsultas);
+
+  printf("Informe o código do médico:\n");
+  fflush(stdin);
+  scanf("%d", &codigo);
+
+  while (!feof(fConsultas))
+  {
+    if (cons.codigoMedico == codigo)
+    {
+      qtdConsultas++;
+    }
+
+    salarioMedico = precoConsulta * qtdConsultas;
+    fread(&cons, sizeof(cons), 1, fConsultas);
+  }
+  if (qtdConsultas == 0)
+  {
+    printf("Código do médico inválido ou nenhuma consulta realizada");
+  }
+
+  printf("\nSalário: R$%.2f\n", salarioMedico);
 }
 
 // MÉTODOS DE CONSULTA
@@ -474,6 +512,45 @@ void cadastraConsulta(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas)
   fwrite(&cons, sizeof(cons), 1, fConsultas);
 }
 
+void cancelaConsulta(FILE *fConsultas)
+{
+  FILE *consultasNew = fopen("consulta_new.dat", "w+b");
+  consulta cons;
+  int codigo, control = 0;
+
+  fseek(consultasNew, 0, SEEK_SET);
+  fseek(fConsultas, 0, SEEK_SET);
+  fread(&cons, sizeof(cons), 1, fConsultas);
+
+  printf("Digite o código da consulta...:");
+  fflush(stdin);
+  scanf("%d", &codigo);
+
+  while (!feof(fConsultas))
+  {
+    if (codigo != cons.codigoConsulta)
+    {
+      fseek(consultasNew, 0, SEEK_END);
+      fwrite(&cons, sizeof(cons), 1, consultasNew);
+    }
+    else
+      control++;
+    fread(&cons, sizeof(cons), 1, fConsultas);
+  }
+
+  remove("consulta.dat");
+  rename("consultas_new", "consulta.dat");
+
+  if (control == 0)
+  {
+    printf("Consulta não encontrada. Cancelamento não realizado!\n");
+  }
+}
+
+void alteraConsulta(FILE *fConsultas)
+{
+}
+
 void imprimeConsultas(FILE *fConsultas)
 {
   consulta cons;
@@ -488,6 +565,256 @@ void imprimeConsultas(FILE *fConsultas)
     printf("Data: %02d/%02d/%04d\n", cons.data.dia, cons.data.mes, cons.data.ano);
     printf("Horario: %02d:%02d\n", cons.data.hora, cons.data.minuto);
     fread(&cons, sizeof(cons), 1, fConsultas);
+  }
+}
+
+void imprimeConsultasPorData(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas)
+{
+  consulta cons;
+  medico med;
+  paciente pac;
+
+  int controle = 0, dia = -1, mes = -1, ano = -1;
+
+  fseek(fConsultas, 0, SEEK_SET);
+  fseek(fMedicos, 0, SEEK_SET);
+  fseek(fPacientes, 0, SEEK_SET);
+  fread(&cons, sizeof(cons), 1, fConsultas);
+  fread(&med, sizeof(med), 1, fMedicos);
+  fread(&pac, sizeof(pac), 1, fPacientes);
+
+  printf("\nExibir consultas da data: (Formato DD/MM/AAAA)\n");
+  fflush(stdin);
+  scanf("%d/%d/%d", &dia, &mes, &ano);
+
+  while (!feof(fConsultas))
+  {
+    if (cons.data.dia == dia && cons.data.mes == mes && cons.data.ano == ano)
+    {
+      fseek(fMedicos, sizeof(med) * (localizaMedico(fMedicos, cons.codigoMedico)), SEEK_SET);
+      fseek(fPacientes, sizeof(pac) * (localizaPaciente(fPacientes, cons.codigoPaciente)), SEEK_SET);
+      fread(&med, sizeof(med), 1, fMedicos);
+      fread(&pac, sizeof(pac), 1, fPacientes);
+
+      printf("Código da consulta: %d\n", cons.codigoConsulta);
+      printf("Código do médico: %d\n", cons.codigoMedico);
+      printf("Nome do médico:  %s\n", med.nome);
+      printf("Codigo do paciente: %d\n", cons.codigoPaciente);
+      printf("Nome do paciente: %s\n", pac.nome);
+      printf("Horario: %02d:%02d\n", cons.data.hora, cons.data.minuto);
+
+      controle++;
+    }
+
+    fread(&cons, sizeof(cons), 1, fConsultas);
+  }
+  if (controle == 0)
+  {
+    printf("\nNenhuma consulta nesta data\n");
+  }
+}
+
+void imprimeConsultasPorMedico(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas)
+{
+  consulta cons;
+  medico med;
+  paciente pac;
+  char nomeAux[30], nome[20];
+  int controle = 0, codigo = 0, op = 0;
+
+  fseek(fConsultas, 0, SEEK_SET);
+  fseek(fMedicos, 0, SEEK_SET);
+  fseek(fPacientes, 0, SEEK_SET);
+  fread(&cons, sizeof(cons), 1, fConsultas);
+  fread(&med, sizeof(med), 1, fMedicos);
+  fread(&pac, sizeof(pac), 1, fPacientes);
+  do
+  {
+    printf("\nExibir consultas de um medico:\n1 - por codigo\n2 - por nome\n");
+    fflush(stdin);
+    scanf("%d", &op);
+    if (op == 1)
+    {
+      printf("\nDigite o codigo: ");
+      fflush(stdin);
+      scanf("%d", &codigo);
+    }
+    else if (op == 2)
+    {
+      printf("\nDigite o nome do medico: ");
+      fflush(stdin);
+      gets(nome);
+    }
+    else
+      printf("\nDigite uma opção correta\n");
+
+  } while (op < 1 || op > 2);
+
+  if (op == 2)
+  {
+
+    while (!feof(fMedicos))
+    {
+      strcpy(nomeAux, med.nome);
+      strlwr(nomeAux);
+      strlwr(nome);
+      if (strcmp(nome, nomeAux) == 0)
+      {
+        codigo = med.codigo;
+      }
+
+      fread(&med, sizeof(med), 1, fMedicos);
+    }
+  }
+
+  while (!feof(fConsultas))
+  {
+
+    if (cons.codigoMedico == codigo)
+    {
+      fseek(fMedicos, sizeof(med) * (localizaMedico(fMedicos, cons.codigoMedico)), SEEK_SET);
+      fseek(fPacientes, sizeof(pac) * (localizaPaciente(fPacientes, cons.codigoPaciente)), SEEK_SET);
+      fread(&med, sizeof(med), 1, fMedicos);
+      fread(&pac, sizeof(pac), 1, fPacientes);
+      printf("\nCódigo da consulta: %d\n", cons.codigoConsulta);
+      printf("Código do médico: %d\n", cons.codigoMedico);
+      printf("Nome do médico: %s\n", med.nome);
+      printf("Codigo do paciente: %d\n", cons.codigoPaciente);
+      printf("Nome do paciente: %s\n", pac.nome);
+      printf("Data: %02d/%02d/%04d\n", cons.data.dia, cons.data.mes, cons.data.ano);
+      printf("Horario: %02d:%02d\n", cons.data.hora, cons.data.minuto);
+      controle++;
+    }
+
+    fread(&cons, sizeof(cons), 1, fConsultas);
+  }
+  if (controle == 0)
+  {
+    printf("\nNenhuma consulta para este medico ou informação incorreta\n");
+  }
+}
+
+void imprimeConsultasPorPaciente(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas)
+{
+  consulta cons;
+  medico med;
+  paciente pac;
+
+  char nome[20], nomeAux[30];
+  int controle = 0, codigo = 0;
+  fseek(fConsultas, 0, SEEK_SET);
+  fseek(fMedicos, 0, SEEK_SET);
+  fseek(fPacientes, 0, SEEK_SET);
+  fread(&cons, sizeof(cons), 1, fConsultas);
+  fread(&med, sizeof(med), 1, fMedicos);
+  fread(&pac, sizeof(pac), 1, fPacientes);
+  int op = 0;
+  int dia, mes, ano;
+  printf("Quantidade de consultas realizadas ate a data:");
+  scanf("%d/%d/%d", &dia, &mes, &ano);
+  do
+  {
+    printf("\nExibir consultas realizadas de um paciente ate a data:\n1 - por codigo\n2 - por nome\n");
+    fflush(stdin);
+    scanf("%d", &op);
+    if (op == 1)
+    {
+      printf("\nDigite o codigo: ");
+      fflush(stdin);
+      scanf("%d", &codigo);
+    }
+    else if (op == 2)
+    {
+      printf("\nDigite o nome do paciente: ");
+      fflush(stdin);
+      gets(nome);
+    }
+    else
+      printf("\nDigite uma opção correta\n");
+
+  } while (op < 1 || op > 2);
+
+  if (op == 2)
+  {
+
+    while (!feof(fPacientes))
+    {
+      strcpy(nomeAux, pac.nome);
+      strlwr(nomeAux);
+      strlwr(nome);
+      if (strcmp(nome, nomeAux) == 0)
+      {
+        codigo = pac.codigo;
+      }
+
+      fread(&pac, sizeof(pac), 1, fMedicos);
+    }
+  }
+
+  while (!feof(fConsultas))
+  {
+
+    if (cons.codigoPaciente == codigo)
+    {
+      if (cons.data.ano < ano)
+      {
+
+        fseek(fMedicos, sizeof(med) * (localizaMedico(fMedicos, cons.codigoMedico)), SEEK_SET);
+        fseek(fPacientes, sizeof(pac) * (localizaPaciente(fPacientes, cons.codigoPaciente)), SEEK_SET);
+        fread(&med, sizeof(med), 1, fMedicos);
+        fread(&pac, sizeof(pac), 1, fPacientes);
+        printf("\nCódigo da consulta: %d\n", cons.codigoConsulta);
+        printf("Código do médico: %d\n", cons.codigoMedico);
+        printf("Nome do médico: %s\n", med.nome);
+        printf("Codigo do paciente: %d\n", cons.codigoPaciente);
+        printf("Nome do paciente: %s\n", pac.nome);
+        printf("Data: %02d/%02d/%04d\n", cons.data.dia, cons.data.mes, cons.data.ano);
+        printf("Horario: %02d:%02d\n", cons.data.hora, cons.data.minuto);
+        controle++;
+      }
+      else if (cons.data.ano == ano)
+      {
+        if (cons.data.mes < mes)
+        {
+          fseek(fMedicos, sizeof(med) * (localizaMedico(fMedicos, cons.codigoMedico)), SEEK_SET);
+          fseek(fPacientes, sizeof(pac) * (localizaPaciente(fPacientes, cons.codigoPaciente)), SEEK_SET);
+          fread(&med, sizeof(med), 1, fMedicos);
+          fread(&pac, sizeof(pac), 1, fPacientes);
+          printf("\nCódigo da consulta:  %d \n", cons.codigoConsulta);
+          printf("Código do médico:    %d \n", cons.codigoMedico);
+          printf("Nome do médico:      %s \n", med.nome);
+          printf("Codigo do paciente:  %d \n", cons.codigoPaciente);
+          printf("Nome do paciente:    %s \n", pac.nome);
+          printf("Data:                %02d/%02d/%04d\n", cons.data.dia, cons.data.mes, cons.data.ano);
+          printf("Horario:             %02d:%02d\n", cons.data.hora, cons.data.minuto);
+          controle++;
+        }
+        else if (cons.data.mes == mes)
+        {
+
+          if (cons.data.dia <= dia)
+          {
+            fseek(fMedicos, sizeof(med) * (localizaMedico(fMedicos, cons.codigoMedico)), SEEK_SET);
+            fseek(fPacientes, sizeof(pac) * (localizaPaciente(fPacientes, cons.codigoPaciente)), SEEK_SET);
+            fread(&med, sizeof(med), 1, fMedicos);
+            fread(&pac, sizeof(pac), 1, fPacientes);
+            printf("\nCódigo da consulta: %d\n", cons.codigoConsulta);
+            printf("Código do médico: %d\n", cons.codigoMedico);
+            printf("Nome do médico: %s\n", med.nome);
+            printf("Codigo do paciente: %d\n", cons.codigoPaciente);
+            printf("Nome do paciente: %s\n", pac.nome);
+            printf("Data: %02d/%02d/%04d\n", cons.data.dia, cons.data.mes, cons.data.ano);
+            printf("Horario: %02d:%02d\n", cons.data.hora, cons.data.minuto);
+            controle++;
+          }
+        }
+      }
+    }
+    fread(&cons, sizeof(cons), 1, fConsultas);
+  }
+  if (controle == 0)
+  {
+    printf("\nNenhuma consulta para este paciente ou informação incorreta\n");
   }
 }
 
