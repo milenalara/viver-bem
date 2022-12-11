@@ -538,8 +538,8 @@ void cancelaConsulta(FILE *fConsultas)
     fread(&cons, sizeof(cons), 1, fConsultas);
   }
 
-  remove("consulta.dat");
-  rename("consultas_new", "consulta.dat");
+  remove("consultas.dat");
+  rename("consultas_new", "consultas.dat");
 
   if (control == 0)
   {

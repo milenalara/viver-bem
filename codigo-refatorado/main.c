@@ -107,8 +107,8 @@ int main()
       cadastraConsulta(fPacientes, fMedicos, fConsultas);
       break;
     case 9:
-      break;
       alteraConsulta(fConsultas);
+      break;
     case 10:
       cancelaConsulta(fConsultas);
       break;
