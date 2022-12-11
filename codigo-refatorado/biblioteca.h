@@ -22,7 +22,7 @@ struct Tpaciente
 {
   int codigo;
   char nome[100];
-  char telefone[20];
+  long int telefone;
   char endereco[200];
   char dataNascimento[10];
 };
@@ -31,9 +31,9 @@ typedef struct Tpaciente paciente;
 struct Tmedico
 {
   int codigo;
-  char nome[40];
-  char telefone[20];
-  char especialidade[20];
+  char nome[100];
+  long int telefone;
+  char especialidade[30];
 };
 typedef struct Tmedico medico;
 
@@ -130,7 +130,7 @@ void cadastraPaciente(FILE *fPacientes)
 
   printf("Informe o telefone(Formato: (00)00000-0000):\n");
   fflush(stdin);
-  gets(pac.telefone);
+  scanf("%li", &pac.telefone);
 
   printf("Informe o endereço (Formato: Logradouro, numero, bairro, cidade):\n");
   fflush(stdin);
@@ -143,6 +143,8 @@ void cadastraPaciente(FILE *fPacientes)
   fseek(fPacientes, 0, SEEK_END);
   fwrite(&pac, sizeof(pac), 1, fPacientes);
   fflush(fPacientes);
+
+  printf("\nPaciente cadastrado com sucesso.\n");
 }
 
 void alteraPaciente(FILE *fPacientes)
@@ -179,6 +181,8 @@ void alteraPaciente(FILE *fPacientes)
     fseek(fPacientes, sizeof(pac) * (posicao), SEEK_SET);
     fwrite(&pac, sizeof(pac), 1, fPacientes);
     fflush(fPacientes);
+
+    printf("\nRegistro de paciente alterado com sucesso.\n");
   }
   else
   {
@@ -257,11 +261,13 @@ void cadastraMedico(FILE *fMedicos)
 
   printf("Informe o telefone com DDD sem 0 na frente:\n");
   fflush(stdin);
-  gets(med.telefone);
+  scanf("%li", &med.telefone);
 
   fseek(fMedicos, 0, SEEK_END);
   fwrite(&med, sizeof(med), 1, fMedicos);
   fflush(fMedicos);
+
+  printf("\nMédico(a) cadastrado com sucesso.\n");
 }
 
 void alteraMedico(FILE *fMedicos)
@@ -291,6 +297,8 @@ void alteraMedico(FILE *fMedicos)
     fseek(fMedicos, sizeof(med) * (posicao), SEEK_SET);
     fwrite(&med, sizeof(med), 1, fMedicos);
     fflush(fMedicos);
+
+    printf("\nRegistro de médico alterado com sucesso.\n");
   }
   else
   {
@@ -510,6 +518,8 @@ void cadastraConsulta(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas)
 
   fseek(fConsultas, 0, SEEK_END);
   fwrite(&cons, sizeof(cons), 1, fConsultas);
+
+  printf("\nConsulta agendada com sucesso.\n");
 }
 
 void cancelaConsulta(FILE *fConsultas)
@@ -543,7 +553,11 @@ void cancelaConsulta(FILE *fConsultas)
 
   if (control == 0)
   {
-    printf("Consulta não encontrada. Cancelamento não realizado!\n");
+    printf("\nConsulta não encontrada. Cancelamento não realizado!\n");
+  }
+  else
+  {
+    printf("\nConsulta cancelada com sucesso.\n");
   }
 }
 
