@@ -145,7 +145,7 @@ void cadastraPaciente(FILE *fPacientes)
   fflush(fPacientes);
 }
 
-void alteraPaciente(FILE *fPaciente)
+void alteraPaciente(FILE *fPacientes)
 {
   int codigo, posicao;
   paciente pac;
@@ -153,12 +153,12 @@ void alteraPaciente(FILE *fPaciente)
   fflush(stdin);
   scanf("%i", &codigo);
 
-  posicao = localizaPaciente(fPaciente, codigo);
+  posicao = localizaPaciente(fPacientes, codigo);
 
   if (posicao != -1)
   {
-    fseek(fPaciente, sizeof(pac) * (posicao), SEEK_SET);
-    fread(&pac, sizeof(pac), 1, fPaciente);
+    fseek(fPacientes, sizeof(pac) * (posicao), SEEK_SET);
+    fread(&pac, sizeof(pac), 1, fPacientes);
 
     printf("Informe o nome atualizado:\n");
     fflush(stdin);
@@ -176,9 +176,9 @@ void alteraPaciente(FILE *fPaciente)
     fflush(stdin);
     gets(pac.dataNascimento);
 
-    fseek(fPaciente, sizeof(pac) * (posicao), SEEK_SET);
-    fwrite(&pac, sizeof(pac), 1, fPaciente);
-    fflush(fPaciente);
+    fseek(fPacientes, sizeof(pac) * (posicao), SEEK_SET);
+    fwrite(&pac, sizeof(pac), 1, fPacientes);
+    fflush(fPacientes);
   }
   else
   {
@@ -375,7 +375,7 @@ int localizaConsulta(FILE *fConsultas, int codigoConsulta)
   }
 }
 
-int localizaConsultasMedico(FILE *fConsultas, int codigoMedico, int dia, int mes, int ano)
+int localizaConsultasPorMedico(FILE *fConsultas, int codigoMedico, int dia, int mes, int ano)
 {
   int posicao = -1, achou = 0;
   consulta cons;
@@ -400,7 +400,7 @@ int localizaConsultasMedico(FILE *fConsultas, int codigoMedico, int dia, int mes
   }
 }
 
-int localizaQtdConsultasMedico(FILE *fConsultas, int codigoMedico, int dia, int mes, int ano)
+int localizaQtdConsultasPorMedico(FILE *fConsultas, int codigoMedico, int dia, int mes, int ano)
 {
   int achou = 0;
   consulta cons;
@@ -463,7 +463,7 @@ void cadastraConsulta(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas)
       printf("Informe a data da consulta (DD/MM/AAAA):\n");
       fflush(stdin);
       scanf("%d/%d/%d", &cons.data.dia, &cons.data.mes, &cons.data.ano);
-      if (localizaQtdConsultasMedico(fConsultas, cons.codigoMedico, cons.data.dia, cons.data.mes, cons.data.ano) >= 2)
+      if (localizaQtdConsultasPorMedico(fConsultas, cons.codigoMedico, cons.data.dia, cons.data.mes, cons.data.ano) >= 2)
       {
         printf("\nEste médico já possui 2 consultas nesta data, favor escolher outra data\n");
         controleData = 1;
@@ -481,7 +481,7 @@ void cadastraConsulta(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas)
       // printf("%d\n%d\n",agendamento.data.hora,agendamento.data.minuto);
     } while (cons.data.hora < 7 || cons.data.hora > 21 || cons.data.minuto < 0 || cons.data.minuto > 60);
 
-    int posicaoMed = localizaConsultasMedico(fConsultas, cons.codigoMedico, cons.data.dia, cons.data.mes, cons.data.ano);
+    int posicaoMed = localizaConsultasPorMedico(fConsultas, cons.codigoMedico, cons.data.dia, cons.data.mes, cons.data.ano);
 
     if (posicaoMed != -1)
     {
