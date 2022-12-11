@@ -3,24 +3,24 @@
 #include <string.h>
 #include <locale.h>
 #include <time.h>
-#include "biblioteca.h"
+#include "bibliotecaviverbem.h"
 
-// MÉTODOS DO SISTEMA
+// MÃ‰TODOS DO SISTEMA
 void menuPrincipal();
 void menuProgramas();
 
-// MÉTODOS DE PACIENTE
+// MÃ‰TODOS DE PACIENTE
 void cadastraPaciente(FILE *fPacientes);
 void alteraPaciente(FILE *fPaciente);
 void imprimePacientes(FILE *fPacientes);
 
-// MÉTODOS DE MÉDICO
+// MÃ‰TODOS DE MÃ‰DICO
 void cadastraMedico(FILE *fMedicos);
 void alteraMedico(FILE *fMedicos);
 void imprimeMedicos(FILE *fMedicos);
 void calculaPagamentoMedico(FILE *fConsultas);
 
-// MÉTODOS DE CONSULTA
+// MÃ‰TODOS DE CONSULTA
 void cadastraConsulta(FILE *fPacientes, FILE *fMedicos, FILE *fConsultas);
 void alteraConsulta(FILE *fConsultas);
 void cancelaConsulta(FILE *fConsultas);
@@ -34,7 +34,7 @@ int main()
   setlocale(LC_ALL, "Portuguese");
   srand(time(NULL));
 
-  FILE *fPacientes, *fMedicos, *fConsultas;
+  FILE *fPacientes, *fMedicos, *fConsultas, *fConsultasNew;
 
   int op;
 
@@ -43,7 +43,16 @@ int main()
     printf("Arquivo pacientes.dat criado com sucesso\n");
     if ((fPacientes = fopen("pacientes.dat", "w+b")) == NULL)
     {
-      printf("Erro na criação do arquivo pacientes.dat\n");
+      printf("Erro na criaÃ§Ã£o do arquivo pacientes.dat\n");
+      exit(1);
+    }
+  }
+  if ((fConsultasNew = fopen("consultas_new.dat", "r+b")) == NULL)
+  {
+    printf("Arquivo consultas_new.dat criado com sucesso\n");
+    if ((fConsultasNew = fopen("consultas_new.dat", "w+b")) == NULL)
+    {
+      printf("Erro na criaÃ§Ã£o do arquivo pacientes.dat\n");
       exit(1);
     }
   }
@@ -53,7 +62,7 @@ int main()
     printf("Arquivo medicos.dat criado com sucesso\n");
     if ((fMedicos = fopen("medicos.dat", "w+b")) == NULL)
     {
-      printf("Erro na criação do arquivo medicos.dat\n");
+      printf("Erro na criaÃ§Ã£o do arquivo medicos.dat\n");
       exit(1);
     }
   }
@@ -63,7 +72,7 @@ int main()
     printf("Arquivo consultas.dat criado com sucesso\n");
     if ((fConsultas = fopen("consultas.dat", "w+b")) == NULL)
     {
-      printf("Erro na criação do arquivo consultas.dat\n");
+      printf("Erro na criaÃ§Ã£o do arquivo consultas.dat\n");
       exit(1);
     }
   }
@@ -125,7 +134,7 @@ int main()
       imprimeConsultasPorPaciente(fPacientes, fMedicos, fConsultas);
       break;
     default:
-      printf("Programa não encontrado\n");
+      printf("Programa nÃ£o encontrado\n");
       break;
     }
   } while (op != -1);
